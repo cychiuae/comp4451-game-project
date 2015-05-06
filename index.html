@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>CheeseMan - Eat Me If You Can</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<style>
+			body {
+				background-color: #bd8444;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row" style="padding-top: 50px;">
+				<center>
+				<div style="margin-left: auto; margin-right: auto">
+					<img id="title" src="images/title.jpg" style="display:none;"/>
+					<img id="control" src="images/control.jpg" style="display:none;"/>
+					<img id="howtoplay" src="images/howtoplay.jpg" style="display:none;"/>
+					<img id="gameview" src="images/gameview.jpg" style="display:none;"/>
+					<img id="win1" src="images/win1.jpg" style="display:none;"/>
+					<img id="win2" src="images/win2.jpg" style="display:none;"/>
+					<img id="win3" src="images/win3.jpg" style="display:none;"/>
+					<img id="win4" src="images/win4.jpg" style="display:none;"/>
+					<img id="draw" src="images/draw.jpg" style="display:none;"/>
+					<canvas id="canvasid" style="display:none;">
+						your browser doesn't support canvas!
+					</canvas>
+					<div id="canvas"></div>
+					<form>
+  						<p id="info" style="font-size:20px" color="0x0000FF">Please enter number of player [1,4]: </p>
+						<input id="player" type="number" name="player" defaultValue="1" value="1" min="1" max="4">
+						<p id="selection" style="font-size:20px" color="0x0000FF">Please choose the game mode: </p>
+						<div id="xd">
+							<input type="radio" id="option0" name="option" value="0" checked>Normal
+							<input type="radio" id="option1" name="option" value="1">First-to-N
+							<input type="radio" id="option2" name="option" value="2">Survival
+						</div>
+					</form>
+				</div>
+			</center>
+			</div>	
+		</div>
+		<script src="js/lib/three.min.js"></script>	
+		<script src="js/lib/jquery-1.11.2.min.js"></script>
+		<script src="js/lib/font.js"></script>
+		<script src="js/lib/physi.js"></script>
+		<script src="js/lib/stats.js"></script>
+		<script src="js/lib/key.js"></script>
+		<script src="js/mice.js"></script>
+		<script src="js/house.js"></script>
+		<script src="js/cheese.js"></script>
+		<script src="js/level.js"></script>
+		<script src="js/arena.js"></script>
+		<script src="js/main.js"></script>
+		<script type="text/javascript">
+			document.body.onload = function() {
+		       	document.getElementById("title").style.display = null;
+			};
+			document.getElementById("title").onclick = function() {
+		       	document.getElementById("title").style.display = "none";
+		       	document.getElementById("gameview").style.display = null;
+			}
+			document.getElementById("gameview").onclick = function() {
+		       	document.getElementById("gameview").style.display = "none";
+		       	document.getElementById("control").style.display = null;
+			}
+			document.getElementById("control").onclick = function() {
+		       	document.getElementById("control").style.display = "none";
+		       	document.getElementById("howtoplay").style.display = null;
+			}
+
+			document.getElementById("howtoplay").onclick = function() {
+		       	var numberOfPlayer = document.getElementById("player").value;
+		       	var mode = document.getElementsByName("option");
+		       	var selection = 0;
+		       	for(var i = 0; i < mode.length; i++) {
+		       		if(mode[i].checked) {
+		       			selection = i;
+		       		}
+		       	}
+		       	document.getElementById("player").style.visibility = "hidden";
+		       	document.getElementById("selection").style.display = "none";
+		       	document.getElementById("xd").style.display = "none";;
+		       	document.getElementById("howtoplay").style.display = "none";
+		       	// element.parentNode.removeChild(element);
+				game.init(numberOfPlayer, selection);
+			}
+
+			document.getElementById("win1").onclick = function() {
+		       	document.getElementById("win1").style.display = "none";
+				location.reload();
+			}
+			document.getElementById("win2").onclick = function() {
+		       	document.getElementById("win2").style.display = "none";
+				location.reload();
+			}
+			document.getElementById("win3").onclick = function() {
+		       	document.getElementById("win3").style.display = "none";
+				location.reload();
+			}
+			document.getElementById("win4").onclick = function() {
+		       	document.getElementById("win4").style.display = "none";
+				location.reload();
+			}
+			document.getElementById("draw").onclick = function() {
+		       	document.getElementById("draw").style.display = "none";
+				location.reload();
+			}
+
+		</script>
+	</body>
+</html>
