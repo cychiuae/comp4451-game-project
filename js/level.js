@@ -5,8 +5,7 @@ function Level() {
 	this.numberOfCheeses = -1;
 	this.levelString = null;
 
-	this.currentCountTime = 0;
-	this.currentTime = 0;
+	this.currentCountTime = -1;
 	/********** Properties **********/
 
 	/********** Graphics **********/
@@ -29,7 +28,7 @@ function Level() {
 	text3d.computeBoundingBox();
 	var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
 	var textMaterial = new THREE.MeshLambertMaterial({ 
-		color: Math.random() * 0xffffff
+		color: 0xffff00
 	});
 	this.text = new THREE.Mesh(
 		text3d, 
@@ -47,21 +46,23 @@ function Level() {
 	this.changeLevelContent = function() {
 		switch (this.levelID) {
 			case 0:
+				game.bgm = new Audio("sounds/bgm0.mp3");
 				this.levelTime = 60;
-				this.changeText(60);
 				this.currentCountTime = 60;
+				this.changeText(this.currentCountTime);
 				this.levelString = "Who get the most cheeses wins!!!";
 				break;
 			case 1:
-				this.changeText(300);
+				game.bgm = new Audio("sounds/bgm1.mp3");
 				this.levelTime = 300;
 				this.currentCountTime = 300;
+				this.changeText(this.currentCountTime);
 				this.numberOfCheeses = 20;
 				this.levelString = "The first who get " + this.numberOfCheeses + " wins!!!";
 				break;
 			case 2:
-				this.changeText(999);
-				this.currentCountTime = 999;
+				game.bgm = new Audio("sounds/bgm2.mp3");
+				this.changeText("TIME NEVER ENDS           ____");
 				this.levelString = "The one who survives wins!!!";
 				break;
 			default:
@@ -75,25 +76,24 @@ function Level() {
 	this.checkWin = function() {
 		switch (this.levelID) {
 			case 0:
-				if(this.currentCountTime == 0){
-					var mostCheese = -1;
+				if(!game.clock.running) {
+					var mostCheese = 0;
 					var mouseIndex = -1;
 					var tie = false;
-					for(var i = 0; i < 4; i++) {
+					for(var i = 0; i < 4; i++) {			
 						if(game.houses[i].numberOfCheese > mostCheese) {
 							mostCheese = game.houses[i].numberOfCheese;
 							mouseIndex = i;
 							tie = false;
 						} else if (game.houses[i].numberOfCheese == mostCheese) {
 							tie = true;
-						} else {
-							tie = false;
 						}
 					}
-					if(!tie) {
-						game.winEnd = mouseIndex;
-					} else {
+
+					if(tie) {
 						game.drawEnd = true;
+					} else {
+						game.winEnd = mouseIndex;
 					}
 				}
 				break;
@@ -103,7 +103,7 @@ function Level() {
 						game.winEnd = i;
 					}
 				}
-				if(this.currentCountTime == 0) {
+				if(!game.clock.running) {
 					game.drawEnd = true;
 				}
 				break;
@@ -141,7 +141,7 @@ function Level() {
 		text3d.computeBoundingBox();
 		var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
 		var textMaterial = new THREE.MeshLambertMaterial({ 
-			color: Math.random() * 0xffffff
+			color: 0xffff00
 		});
 		this.text = new THREE.Mesh(
 			text3d, 
@@ -154,15 +154,12 @@ function Level() {
 
 	this.countDown = function() {
 		if(!game.isPause) {
-			var countTime = ~~(new Date().valueOf() / 1000) - this.currentTime;
-	        if(countTime == 1) {
-	            this.currentTime = ~~(new Date().valueOf() / 1000);
-	            this.currentCountTime -= 1;
-	            this.changeText(this.currentCountTime);
-	        } 
-			if(this.currentCountTime <= 0) {
-				this.currentCountTime = 0;
-			}
+			if(game.clock.getElapsedTime() >= this.levelTime) {
+				game.clock.stop();
+			} else if (~~(this.levelTime - game.clock.getElapsedTime()) != this.currentCountTime){
+				this.currentCountTime -= 1;
+		        this.changeText(this.currentCountTime);
+		    }
 		}
 	};
 	/********** Methods **********/

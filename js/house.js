@@ -3,7 +3,9 @@ function House(houseColor) {
 	this.numberOfCheese = 0;
 	this.houseID = 0;
 	
-	this.hitHouseSound = new Audio('sounds/hithouse.mp3');
+	this.hitHouseSound = new Audio('sounds/hitHouse.mp3');
+	this.hitHouseSound.volume = 0.2;
+	this.hitHouseSound.load();
 	/********** Properties **********/
 
 	/********** Graphics **********/
@@ -82,20 +84,26 @@ function House(houseColor) {
 		this.group.remove(this.text);
 		this.group.add(this.text);
 	};
+
+	// Collision Event
+	this.hitHouse = function() {
+		if(game.mouses[this.houseID].numberOfCheese != 0) {
+			this.hitHouseSound.play();
+			this.saveCheeses(game.mouses[this.houseID].numberOfCheese);
+			// for(var i = game.mouses[this.mainPart.houseID].numberOfCheese; i > 0; i--) {
+			// 	game.cheeses.splice(game.mouses[this.mainPart.houseID].indexOfCheese[i - 1], 1);
+			// }
+			game.mouses[this.houseID].numberOfCheese = 0;
+			game.mouses[this.houseID].changeText(0);
+		}
+	}
+
 	/********** Methods **********/
 	
 	/********** Constructor **********/
 	this.body.addEventListener('collision', function(other_object) {
 		if(other_object == game.mouses[this.mainPart.houseID].body) {
-			if(game.mouses[this.mainPart.houseID].numberOfCheese != 0) {
-				this.mainPart.hitHouseSound.play();
-				this.mainPart.saveCheeses(game.mouses[this.mainPart.houseID].numberOfCheese);
-				// for(var i = game.mouses[this.mainPart.houseID].numberOfCheese; i > 0; i--) {
-				// 	game.cheeses.splice(game.mouses[this.mainPart.houseID].indexOfCheese[i - 1], 1);
-				// }
-				game.mouses[this.mainPart.houseID].numberOfCheese = 0;
-				game.mouses[this.mainPart.houseID].changeText(0);
-			}
+			this.mainPart.hitHouse();
 		}
 	});
 	/********** Constructor **********/

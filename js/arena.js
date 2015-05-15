@@ -1,7 +1,7 @@
 function Arena() {
 	var groundMaterial = Physijs.createMaterial(
 		new THREE.MeshLambertMaterial({ 
-			map: THREE.ImageUtils.loadTexture('images/rocks.jpg'),
+			map: THREE.ImageUtils.loadTexture('images/arena.jpg'),
 		}),
 		1, // high friction
 		0.2 // low restitution

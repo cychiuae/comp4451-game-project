@@ -9,21 +9,27 @@ function Mouse(mouseColor) {
 	this.indexOfCheese = [];
 	
 	this.lastHitByOtherMice = -1;
-	this.lastHitCountDown = 0;
 	this.lastHitTime = 0;
 	this.isDead = false;
 
 	this.isComputer = false;
-	this.minCheeseIndex = -1;
-	this.minCheesePos = [1000, 1000, 1000];
-	this.minMousePos = [1000, 1000, 1000];
 	this.forwardCount = 0;
 
-	this.getCheeseSound = new Audio('sounds/getcheese.mp3');
-	this.hitMouseSound = new Audio('sounds/hitmouse.mp3');
-	this.hitMouseSound.volume = 0.3;
+	this.getNormalCheeseSound = new Audio('sounds/getNormalCheese.mp3');
+	this.getNormalCheeseSound.volume = 0.2;
+	this.getToxicCheeseSound = new Audio('sounds/getToxicCheese.mp3');
+	this.getToxicCheeseSound.volume = 0.05;
+	this.getRockCheeseSound = new Audio('sounds/getRockCheese.mp3');
+	this.getRockCheeseSound.volume = 0.2;
+	this.hitMouseSound = new Audio('sounds/hitMouse.mp3');
+	this.hitMouseSound.volume = 0.05;
 	this.fallSound = new Audio('sounds/fall.mp3');
-	this.fallSound.volume = 0.3;
+	this.fallSound.volume = 0.05;
+	this.getNormalCheeseSound.load();
+	this.getToxicCheeseSound.load();
+	this.getRockCheeseSound.load();
+	this.hitMouseSound.load();
+	this.fallSound.load();
 	/********** Properties **********/
 
 	/********** Graphics **********/
@@ -284,24 +290,19 @@ function Mouse(mouseColor) {
 	/********** Methods **********/
 	this.update = function() {
 	    if(this.lastHitTime !== 0) {
-	        var countTime = ~~(new Date().valueOf() / 1000) - this.lastHitTime;
-	        if(countTime == 1) {
-	        	if(this.lastHitCountDown > 0) {
-	        		if(this.lastHitCountDown == 1) {
-	        			this.lastHitCountDown = 0;
-		        		this.lastHitByOtherMice = -1;
-		        		this.lastHitTime = 0;
-	        		} else {
-	        		    this.lastHitCountDown -= 1;
-	        		}
-	                this.lastHitTime = ~~(new Date().valueOf() / 1000);
-	            }
+	        var countTime = (~~game.clock.getElapsedTime()) - this.lastHitTime;
+	        if(countTime == 5) {
+	        	this.lastHitByOtherMice = -1;
+	        	this.lastHitTime = 0;
 	        } 
 	    }
 		if(this.body.position.y < -20) {
 			this.isDead = true;
+			this.fallSound.play();
 			if(game.currentLevel.levelID != 2) {
 				this.reset();
+			} else {
+				this.fallSound.pause();
 			}
 		}
 	};
@@ -315,6 +316,14 @@ function Mouse(mouseColor) {
 		forwardVec.applyMatrix4(localTransform);
 		this.body.applyCentralImpulse(forwardVec);
 	};
+
+	this.carry = function() {
+		if(this.numberOfCheese > 0) {
+			this.applyForce(70 - (this.numberOfCheese + 3));
+		} else {
+			this.applyForce(70);
+		}
+	}
 
 	this.changeText = function(text) {
 		this.group.remove(this.text);
@@ -344,6 +353,10 @@ function Mouse(mouseColor) {
 		this.turnRight = !this.turnRight;
 	}
 
+	this.removeText = function() {
+		this.group.remove(this.text);
+	}
+
 	this.rotate = function() {
 		if(this.body.position.y <= 8.7 && this.body.position.y >= 7) {
 			if(this.turnRight) {
@@ -359,16 +372,12 @@ function Mouse(mouseColor) {
 	this.stealCheese = function(otherMouseID) {
 		game.mouses[otherMouseID].numberOfCheese += this.numberOfCheese;
 		game.mouses[otherMouseID].changeText(game.mouses[otherMouseID].numberOfCheese);
-		game.mouses[otherMouseID].lastHitCountDown = 0;
 		game.mouses[otherMouseID].lastHitByOtherMice = -1;
 		game.mouses[otherMouseID].lastHitTime = 0;
 	}
 
 	this.reset = function() {
-		// console.log(this.lastHitCountDown);
-		this.fallSound.play();
-		// console.log(this.lastHitCountDown);
-	    if(this.lastHitCountDown > 0) {
+	    if(this.lastHitByOtherMice != -1) {
 	        this.stealCheese(this.lastHitByOtherMice);
 	    }
 		this.body.__dirtyPosition = true;
@@ -382,70 +391,59 @@ function Mouse(mouseColor) {
 		// for(var i = this.numberOfCheese; i > 0; i--) {
 		// 	game.cheeses.splice(this.indexOfCheese[i - 1], 1);
 		// }
+		this.isDead = false;
 		this.numberOfCheese = 0;
-		this.lastHitCountDown = 0;
-		this.minCheeseIndex = -1;
-		this.minCheesePos = [1000, 1000, 1000];
-		this.minMousePos = [1000, 1000, 1000];
 		this.changeText(0);
 	};
 
 	// AI
 	this.aiFindClosestCheese = function() {
-		this.minCheesePos = 100000000000;
-		for(var i = 0; i < game.cheeses.length; i++) {
-			if(game.cheeses[i].isExist) {
-				myMousePos = new THREE.Vector3(Math.round(this.body.position.x) / 1, Math.round(this.body.position.y) / 1, Math.round(this.body.position.z) / 1);
-				cheesePos = new THREE.Vector3(Math.round(game.cheeses[i].position.x) / 1, Math.round(game.cheeses[i].position.y) / 1, Math.round(game.cheeses[i].position.z) / 1);
-				if(myMousePos.distanceTo(cheesePos) < this.minCheesePos) {
+		for(var i = 0; i < game.normalCheeses.length; i++) {
+			if(game.normalCheeses[i].isExist) {
+				myMousePos = new THREE.Vector3(Math.round(this.body.position.x), 6.5, Math.round(this.body.position.z));
+				cheesePos = new THREE.Vector3(Math.round(game.normalCheeses[i].position.x), 6.5, Math.round(game.normalCheeses[i].position.z));
+
+				if((myMousePos.distanceTo(cheesePos) < 70) && (game.normalCheeses[i].position.y > 5)) {
 					this.body.setAngularVelocity(new THREE.Vector3());
 
-					var minCheesePos = new THREE.Vector3(game.cheeses[i].position.x, 6.5, game.cheeses[i].position.z);
+					var minCheesePos = new THREE.Vector3(game.normalCheeses[i].position.x, 6.5, game.normalCheeses[i].position.z);
 					var localTransform = new THREE.Matrix4();
 					localTransform.extractRotation(this.body.matrix);
 					var forwardVec = new THREE.Vector3(0, 0, 1);
 					forwardVec.applyMatrix4(localTransform);
 
 					var angle = forwardVec.angleTo(minCheesePos);
-					if((angle > 0) && (this.forwardCount < 10) && ((angle < (Math.PI * 0.2)) || (angle > (Math.PI * 1.8)))) {
+					if((angle > 0) && (this.forwardCount < 10) && ((angle < (Math.PI * 0.1)) || (angle > (Math.PI * 1.9)))) {
 						this.applyForce(20);
 						this.turnRight = !this.turnRight;
-						this.forwardCount = this.forwardCount + 1;
+						this.forwardCount += 1;
 					} else {
 						this.forwardCount = 0;
 					}
-				}	else {
-						this.forwardCount = 0;
 				}
 			}
 		}
 	}
 
 	this.aiFindClosestPlayer = function() {
-		this.minMousePos = 100000000000;
 		for(var i = 0; i < 4; i++) {
-			if(game.mouses[i].mouseID != this.mouseID) {
-				myMousePos = new THREE.Vector3(Math.round(this.body.position.x) / 1, Math.round(this.body.position.y) / 1, Math.round(this.body.position.z) / 1);
-				otherMousePos = new THREE.Vector3(Math.round(game.mouses[i].body.position.x) / 1, Math.round(game.mouses[i].body.position.y) / 1, Math.round(game.mouses[i].body.position.z) / 1);
-				if(myMousePos.distanceTo(otherMousePos) < this.minMousePos) {
-				
+			if((game.mouses[i].mouseID != this.mouseID) && (!game.mouses[i].isDead)) {
+				myMousePos = new THREE.Vector3(Math.round(this.body.position.x), 6.5, Math.round(this.body.position.z));
+				otherMousePos = new THREE.Vector3(Math.round(game.mouses[i].body.position.x), 6.5, Math.round(game.mouses[i].body.position.z));
+
+				if((myMousePos.distanceTo(otherMousePos) < 100) && (game.mouses[i].body.position.y > 5)) {
 					this.body.setAngularVelocity(new THREE.Vector3());
-				
 					var localTransform = new THREE.Matrix4();
 					localTransform.extractRotation(this.body.matrix);
 					var forwardVec = new THREE.Vector3(0, 0, 1);
 					forwardVec.applyMatrix4(localTransform);
 
 					var angle = forwardVec.angleTo(otherMousePos);
-					
+
 					if((angle > 0) && ((angle < (Math.PI * 0.1)) || (angle > (Math.PI * 1.9)))) {
 						this.applyForce(20);
 						this.turnRight = !this.turnRight;
-					} else {
-						this.rotate();
 					}
-				} else {
-						this.rotate();
 				}
 			}
 		}
@@ -484,24 +482,54 @@ function Mouse(mouseColor) {
 			this.rotate();
 		}
 	}
+
+	// Collision Event
+	this.getNormalCheese = function(normalCheese) {
+		this.getNormalCheeseSound.play();
+		this.numberOfCheese += 1;
+	    this.changeText(this.numberOfCheese);
+	    normalCheese.isExist = false;
+		game.scene.remove(normalCheese);
+	}
+
+	this.getToxicCheese = function(toxicCheese) {
+		this.getToxicCheeseSound.play();
+		this.applyForce(-3000);
+		if(this.numberOfCheese <= 3) {
+			this.numberOfCheese = 0;
+		} else {
+		    this.numberOfCheese -= 3;
+		}
+	    this.changeText(this.numberOfCheese);
+		game.scene.remove(toxicCheese);
+	}
+
+	this.getRockCheese = function() {
+		this.getRockCheeseSound.play();
+	}
+
+	this.hitOtherMouse = function(otherMouseID) {
+		this.hitMouseSound.play();
+        this.lastHitByOtherMice = otherMouseID;
+        this.lastHitTime = ~~game.clock.getElapsedTime();
+	}
 	/********** Methods **********/
 
 	/********** Constructor **********/
 	this.body.addEventListener('collision', function(other_object, linear_velocity, angular_velocity) {
-		if(game.cheeses.indexOf(other_object) != -1) {
-			this.mainPart.getCheeseSound.play();
-		    this.mainPart.numberOfCheese += 1;
-		    this.mainPart.changeText(this.mainPart.numberOfCheese);
-		    other_object.isExist = false;
-			game.scene.remove(other_object);
+		if(game.normalCheeses.indexOf(other_object) != -1) {
+			this.mainPart.getNormalCheese(other_object);
+		}
+		if(game.toxicCheeses.indexOf(other_object) != -1) {
+			this.mainPart.getToxicCheese(other_object);
+		}
+		if(game.rockCheeses.indexOf(other_object) != -1) {
+			this.mainPart.getRockCheese();
 		}
 		for(var i = 0; i < 4; i++) {
 		 	if(this.mainPart.mouseID != i) {
 		 		if(game.mouses[i].body == other_object) {
-					this.mainPart.hitMouseSound.play();
-			        this.mainPart.lastHitCountDown = 5;
-			        this.mainPart.lastHitByOtherMice = i;
-			        this.mainPart.lastHitTime = ~~(new Date().valueOf() / 1000);			
+		 			this.mainPart.hitOtherMouse(i);			
 		 		}
 		 	}
 		}
