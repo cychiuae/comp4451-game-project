@@ -237,7 +237,7 @@ game.randomGenerateToxicCheese = function() {
 
 game.randomGenerateRockCheese = function() {
 	if((~~(game.clock.getElapsedTime() * 100)) % 230 == 0) {
-		var numberOfCheese = parseInt(Math.random() * 1.3);
+		var numberOfCheese = parseInt(Math.random() * 1.7);
 		for(var i = 0; i < numberOfCheese; i++) {
 			var rockCheese = new Rockcheese();
 			game.rockCheeses.push(rockCheese.body);
@@ -248,7 +248,7 @@ game.randomGenerateRockCheese = function() {
 
 game.userUpdate = function() {
 	if((KEY.mouse1 == 1) && (game.mouses[0].isComputer == false)) {
-		game.mouses[0].carry();
+		game.mouses[0].applyForce(70);
 	} 
 	else if(KEY.mouse1 == -1) {
 		game.mouses[0].reverse();
@@ -259,7 +259,7 @@ game.userUpdate = function() {
 	}
 
 	if((KEY.mouse2 == 1) && (game.mouses[1].isComputer == false)) {
-		game.mouses[1].carry();
+		game.mouses[1].applyForce(70);
 	} 
 	else if(KEY.mouse2 == -1) {
 		game.mouses[1].reverse();
@@ -270,7 +270,7 @@ game.userUpdate = function() {
 	}
 
 	if((KEY.mouse3 == 1) && (game.mouses[2].isComputer == false)) {
-		game.mouses[2].carry();
+		game.mouses[2].applyForce(70);
 	} 
 	else if(KEY.mouse3 == -1) {
 		game.mouses[2].reverse();
@@ -281,7 +281,7 @@ game.userUpdate = function() {
 	}
 
 	if((KEY.mouse4 == 1) && (game.mouses[3].isComputer == false)) {
-		game.mouses[3].carry();
+		game.mouses[3].applyForce(70);
 	} 
 	else if(KEY.mouse4 == -1) {
 		game.mouses[3].reverse();
@@ -363,7 +363,6 @@ game.draw = function() {
 
 game.start = function() {
 	game.currentLevel.changeLevelContent();
-	game.bgm.volume = 0.3;
 	game.bgm.load();
 	game.isStart = true;
 	game.bgm.play();
@@ -376,8 +375,6 @@ game.start = function() {
 game.finish = function() {
 	game.bgm.load();
 	game.bgm = null;
-	game.winSound.volume = 0.2;
-	game.drawSound.volume = 0.3;
 	game.winSound.load();
 	game.drawSound.load();
 	game.isStart = false;

@@ -16,15 +16,13 @@ function Mouse(mouseColor) {
 	this.forwardCount = 0;
 
 	this.getNormalCheeseSound = new Audio('sounds/getNormalCheese.mp3');
-	this.getNormalCheeseSound.volume = 0.2;
 	this.getToxicCheeseSound = new Audio('sounds/getToxicCheese.mp3');
-	this.getToxicCheeseSound.volume = 0.05;
+	this.getToxicCheeseSound.volume = 0.3;
 	this.getRockCheeseSound = new Audio('sounds/getRockCheese.mp3');
-	this.getRockCheeseSound.volume = 0.2;
 	this.hitMouseSound = new Audio('sounds/hitMouse.mp3');
-	this.hitMouseSound.volume = 0.05;
+	this.hitMouseSound.volume = 0.3;
 	this.fallSound = new Audio('sounds/fall.mp3');
-	this.fallSound.volume = 0.05;
+	this.fallSound.volume = 0.3;
 	this.getNormalCheeseSound.load();
 	this.getToxicCheeseSound.load();
 	this.getRockCheeseSound.load();
@@ -290,7 +288,7 @@ function Mouse(mouseColor) {
 	/********** Methods **********/
 	this.update = function() {
 	    if(this.lastHitTime !== 0) {
-	        var countTime = (~~game.clock.getElapsedTime()) - this.lastHitTime;
+	        var countTime = (game.clock.getElapsedTime() / 1000) - this.lastHitTime;
 	        if(countTime == 5) {
 	        	this.lastHitByOtherMice = -1;
 	        	this.lastHitTime = 0;
@@ -316,14 +314,6 @@ function Mouse(mouseColor) {
 		forwardVec.applyMatrix4(localTransform);
 		this.body.applyCentralImpulse(forwardVec);
 	};
-
-	this.carry = function() {
-		if(this.numberOfCheese > 0) {
-			this.applyForce(70 - (this.numberOfCheese + 3));
-		} else {
-			this.applyForce(70);
-		}
-	}
 
 	this.changeText = function(text) {
 		this.group.remove(this.text);
@@ -441,6 +431,7 @@ function Mouse(mouseColor) {
 					var angle = forwardVec.angleTo(otherMousePos);
 
 					if((angle > 0) && ((angle < (Math.PI * 0.1)) || (angle > (Math.PI * 1.9)))) {
+						console.log(this.mouseID + "chases" + i);
 						this.applyForce(20);
 						this.turnRight = !this.turnRight;
 					}
@@ -511,7 +502,7 @@ function Mouse(mouseColor) {
 	this.hitOtherMouse = function(otherMouseID) {
 		this.hitMouseSound.play();
         this.lastHitByOtherMice = otherMouseID;
-        this.lastHitTime = ~~game.clock.getElapsedTime();
+        this.lastHitTime = (game.clock.getElapsedTime() / 1000);
 	}
 	/********** Methods **********/
 

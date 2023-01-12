@@ -14,16 +14,16 @@
 		<div class="container">
 			<div class="row" style="padding-top: 50px;">
 				<center>
-				<div id="parent" style="margin-left: auto; margin-right: auto">
-					<img id="title" src="images/title.jpg" height="480" width="640" style="display:none;"/>
-					<img id="control" src="images/control.jpg" height="480" width="640" style="display:none;"/>
-					<img id="howtoplay" src="images/howtoplay.jpg" height="480" width="640" style="display:none;"/>
-					<img id="gameview" src="images/gameview.jpg" height="480" width="640" style="display:none;"/>
-					<img id="win1" src="images/win1.jpg" height="480" width="640" style="display:none;"/>
-					<img id="win2" src="images/win2.jpg" height="480" width="640" style="display:none;"/>
-					<img id="win3" src="images/win3.jpg" height="480" width="640" style="display:none;"/>
-					<img id="win4" src="images/win4.jpg" height="480" width="640" style="display:none;"/>
-					<img id="draw" src="images/draw.jpg" height="480" width="640" style="display:none;"/>
+				<div style="margin-left: auto; margin-right: auto">
+					<img id="title" src="images/title.jpg" style="display:none;"/>
+					<img id="control" src="images/control.jpg" style="display:none;"/>
+					<img id="howtoplay" src="images/howtoplay.jpg" style="display:none;"/>
+					<img id="gameview" src="images/gameview.jpg" style="display:none;"/>
+					<img id="win1" src="images/win1.jpg" style="display:none;"/>
+					<img id="win2" src="images/win2.jpg" style="display:none;"/>
+					<img id="win3" src="images/win3.jpg" style="display:none;"/>
+					<img id="win4" src="images/win4.jpg" style="display:none;"/>
+					<img id="draw" src="images/draw.jpg" style="display:none;"/>
 					<canvas id="canvasid" style="display:none;">
 						your browser doesn't support canvas!
 					</canvas>
@@ -58,13 +58,10 @@
 		<script src="js/main.js"></script>
 		<script type="text/javascript">
 			var titleBgm = new Audio("sounds/titleBgm.mp3");
-			titleBgm.volume = 0.1;
 			titleBgm.load();
 
 			var continueSound = new Audio("sounds/continue.mp3");
 			continueSound.load();
-
-			var parent = document.getElementById("parent");
 
 			document.body.onload = function() {
 				titleBgm.play();	
@@ -72,21 +69,18 @@
 			};
 			document.getElementById("title").onclick = function() {
 				continueSound.play();
-		       	// document.getElementById("title").style.display = "none";
+		       	document.getElementById("title").style.display = "none";
 		       	document.getElementById("gameview").style.display = null;
-		       	parent.removeChild(document.getElementById("title"));
 			}
 			document.getElementById("gameview").onclick = function() {
 				continueSound.play();
-		       	// document.getElementById("gameview").style.display = "none";
+		       	document.getElementById("gameview").style.display = "none";
 		       	document.getElementById("control").style.display = null;
-		       	parent.removeChild(document.getElementById("gameview"));
 			}
 			document.getElementById("control").onclick = function() {
 				continueSound.play();
-		       	// document.getElementById("control").style.display = "none";
+		       	document.getElementById("control").style.display = "none";
 		       	document.getElementById("howtoplay").style.display = null;
-		       	parent.removeChild(document.getElementById("control"));
 			}
 
 			document.getElementById("howtoplay").onclick = function() {
@@ -101,9 +95,8 @@
 		       	document.getElementById("player").style.visibility = "hidden";
 		       	document.getElementById("selection").style.display = "none";
 		       	document.getElementById("xd").style.display = "none";;
-		       	// document.getElementById("howtoplay").style.display = "none";
+		       	document.getElementById("howtoplay").style.display = "none";
 		       	// element.parentNode.removeChild(element);
-		       	parent.removeChild(document.getElementById("howtoplay"));
 				continueSound.load();
 				continueSound = null;
 		       	titleBgm.load();
@@ -112,30 +105,26 @@
 			}
 
 			document.getElementById("win1").onclick = function() {
-		       	// document.getElementById("win1").style.display = "none";
-		       	parent.removeChild(document.getElementById("win1"));
+		       	document.getElementById("win1").style.display = "none";
 				location.reload();
 			}
 			document.getElementById("win2").onclick = function() {
-		       	// document.getElementById("win2").style.display = "none";
-		       	parent.removeChild(document.getElementById("win2"));
+		       	document.getElementById("win2").style.display = "none";
 				location.reload();
 			}
 			document.getElementById("win3").onclick = function() {
-		       	// document.getElementById("win3").style.display = "none";
-		       	parent.removeChild(document.getElementById("win3"));
+		       	document.getElementById("win3").style.display = "none";
 				location.reload();
 			}
 			document.getElementById("win4").onclick = function() {
-		       	// document.getElementById("win4").style.display = "none";
-		       	parent.removeChild(document.getElementById("win4"));
+		       	document.getElementById("win4").style.display = "none";
 				location.reload();
 			}
 			document.getElementById("draw").onclick = function() {
-		       	// document.getElementById("draw").style.display = "none";
-		       	parent.removeChild(document.getElementById("draw"));
+		       	document.getElementById("draw").style.display = "none";
 				location.reload();
 			}
+
 		</script>
 	</body>
 </html>

@@ -4,7 +4,6 @@ function House(houseColor) {
 	this.houseID = 0;
 	
 	this.hitHouseSound = new Audio('sounds/hitHouse.mp3');
-	this.hitHouseSound.volume = 0.2;
 	this.hitHouseSound.load();
 	/********** Properties **********/
 
